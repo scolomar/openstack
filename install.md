@@ -67,6 +67,125 @@ sudo ip addr del x.x.x.x/24 dev eth1
 sudo ip addr add x.x.x.x/24 dev br-ex
 sudo ip link set dev br-ex up
 sudo sed --in-place /ifconfig.eth1.*24/s/^/#/ /etc/network/if-up.d/dummy
+sudo apt-get install -y neutron-l3-agent
+sudo service neutron-l3-agent restart
+sudo service openvswitch-switch restart
+sudo service neutron-server restart
+sudo service neutron-openvswitch-agent restart
+sudo service neutron-l3-agent restart
+sudo apt-get install -y neutron-dhcp-agent
+sudo service neutron-dhcp-agent restart
+sudo service neutron-metadata-agent restart
+openstack network create --external --provider-network-type flat --provider-physical-network external public
+openstack subnet create public-subnet --no-dhcp --gateway 172.30.1.1 --subnet-range 172.30.1.0/24 --allocation-pool start=172.30.1.60,end=172.30.1.69 --network public
+openstack floating ip create public
+openstack subnet create net1 --subnet-range 10.0.0.0/24 --network private
+openstack router create router1
+openstack router set --external-gateway public router1
+openstack router add subnet router1 net1
+openstack floating ip delete $( openstack floating ip list | grep None )
+openstack router add subnet router1 net1
+./create-mysql-db-for.sh nova
+openstack user create --domain default --password nova nova
+openstack role add --project service --user nova admin
+openstack user create --domain default --password nova placement
+openstack role add --project service --user placement admin
+openstack service create --name nova --description "OpenStack Compute" compute
+openstack endpoint create --region RegionOne compute public http://hostname:8774/v2.1
+openstack endpoint create --region RegionOne compute internal http://hostname:8774/v2.1
+openstack endpoint create --region RegionOne compute admin http://hostname:8774/v2.1
+openstack service create --name placement --description "Placement API" placement
+openstack endpoint create --region RegionOne placement public http://hostname:8778
+openstack endpoint create --region RegionOne placement internal http://hostname:8778
+openstack endpoint create --region RegionOne placement admin http://hostname:8778
+sudo apt-get install -y nova-api
+sudo service nova-api restart
+sudo apt-get install -y nova-placement-api
+sudo nova-manage api_db sync
+sudo nova-manage cell_v2 map_cell0
+sudo nova-manage cell_v2 create_cell --name=cell1 --verbose
+sudo nova-manage db sync
+sudo apt-get install -y nova-scheduler nova-conductor
+sudo apt-get install -y nova-consoleauth nova-novncproxy nova-xvpvncproxy
+sudo service nova-consoleauth restart
+sudo service nova-xvpvncproxy restart
+sudo service nova-novncproxy restart
+sudo apt-get install -y nova-compute python-guestfs
+sudo dpkg-statoverride --update --add root root 0644 /boot/vmlinuz-4.15.0-48-generic
+sudo chmod +x /etc/kernel/postinst.d/statoverride
+sudo egrep -c '(vmx|svm)' /proc/cpuinfo
+sudo service nova-compute restart
+sudo nova-manage cell_v2 discover_hosts --verbose
+sudo service neutron-server restart
+sudo service neutron-metadata-agent restart
+sudo service nova-consoleauth restart
+sudo service nova-xvpvncproxy restart
+sudo service nova-novncproxy restart
+sudo service nova-compute restart
+sudo service nova-api restart
+sudo service apache2 restart
+openstack flavor create --vcpus 1 --disk 1 --ram 512 m1.tiny
+nova get-vnc-console vm1 novnc
+openstack server resize --flavor m1.xsmall vm1
+openstack server resize --confirm vm1
+sudo rm /var/lib/nova/nova.sqlite
+sudo virsh net-destroy default
+sudo virsh net-undefine default
+./create-mysql-db-for.sh cinder
+openstack user create --domain default --password cinder cinder
+openstack role add --project service --user cinder admin
+openstack service create --name cinderv2 --description "Block Storage" volumev2
+openstack service create --name cinderv3 --description "Block Storage" volumev3
+openstack endpoint create --region RegionOne volumev2 public http://hostname:8776/v2/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev2 internal http://hostname:8776/v2/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev2 admin http://hostname:8776/v2/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev3 public http://hostname:8776/v3/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev3 internal http://hostname:8776/v3/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev3 admin http://hostname:8776/v3/%\(project_id\)s
+sudo apt-get install -y cinder-api
+sudo cinder-manage db sync
+sudo apt-get install -y cinder-scheduler
+sudo apt-get install -y lvm2 thin-provisioning-tools
+cat /proc/partitions
+sudo pvcreate /dev/xvda3
+sudo vgcreate cinder-volumes /dev/xvda3
+sudo apt-get install -y cinder-volume
+sudo service cinder-volume restart
+sudo service cinder-scheduler restart
+sudo service apache2 restart
+sudo service tgt restart
+openstack volume create --size 1 vol1
+openstack volume delete vol1
+sudo apt-get install -y memcached python-memcache
+sudo apt-get install -y openstack-dashboard
+sudo apt-get remove --purge -y openstack-dashboard-ubuntu-theme
+sudo service apache2 restart
+sudo service memcached restart
+openstack user create --domain default --password heat heat
+openstack role add --project service --user heat admin
+openstack service create --name heat --description "Orchestration" orchestration
+openstack service create --name heat-cfn --description "Orchestration" cloudformation
+openstack endpoint create --region RegionOne orchestration public http://hostname:8004/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne orchestration internal http://hostname:8004/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne orchestration admin http://hostname:8004/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne cloudformation public http://dlab:8000/v1
+openstack endpoint create --region RegionOne cloudformation internal http://dlab:8000/v1
+openstack endpoint create --region RegionOne cloudformation admin http://dlab:8000/v1
+openstack domain create --description "Stack projects and users" heat
+openstack user create --domain heat --password heat heat_domain_admin
+openstack role add --domain heat --user-domain heat --user heat_domain_admin admin
+openstack role create heat_stack_owner
+openstack role add --project admin --user admin heat_stack_owner
+openstack role create heat_stack_user
+sudo apt-get install -y heat-api heat-api-cfn
+sudo apt-get install -y heat-engine
+sudo heat-manage db_sync
+sudo service heat-api restart
+sudo service heat-api-cfn restart
+sudo service heat-engine restart
+sudo apt-get install -y python-heat-dashboard
+sudo service apache2 restart
+sudo service memcached restart
 
 
 ```
