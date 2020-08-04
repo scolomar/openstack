@@ -4,7 +4,7 @@ from horizon.utils import secret_key
 from openstack_dashboard.settings import HORIZON_CONFIG
 DEBUG = False
 WEBROOT = '/'
-OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = true
+OPENSTACK_KEYSTONE_MULTIDOMAIN_SUPPORT = True
 LOCAL_PATH = os.path.dirname(os.path.abspath(__file__))
 SECRET_KEY = secret_key.generate_or_read_from_file('/var/lib/openstack-dashboard/secret_key')
 CACHES = {
