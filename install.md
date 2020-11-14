@@ -26,9 +26,6 @@ sudo service apache2 restart
 sudo keystone-manage db_sync
 sudo keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
 sudo keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
-sudo apt-get install -y python-openstackclient
-```
-```
 export OS_TOKEN=ADMIN OS_URL=http://dlab:5000/v3 OS_IDENTITY_API_VERSION=3
 openstack domain create --description 'Default OpenStack domain' default
 openstack project create --domain default --description "Admin project" admin
