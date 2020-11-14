@@ -1,5 +1,7 @@
 ```
 git clone git@github.com:secobau/openstack.git
+```
+```
 sudo cp -r openstack/* /
 sudo chmod +x /usr/local/bin/*
 ```
