@@ -10,7 +10,7 @@ sudo rabbitmq-plugins enable rabbitmq_management --offline
 echo [{rabbit, [{loopback_users, []}]}]. | sudo tee /etc/rabbitmq/rabbitmq.config
 sudo service rabbitmq-server restart
 curl localhost:15672 -I
-/home/stack/scripts/create-mysql-db-for.sh keystone
+./usr/local/bin/create-mysql-db-for.sh keystone
 sudo apt-get install -y keystone apache2 libapache2-mod-wsgi
 ```
 ```
@@ -39,7 +39,7 @@ openstack endpoint create --region RegionOne identity public http://hostname:500
 openstack endpoint create --region RegionOne identity internal http://hostname:5000/v3
 openstack endpoint create --region RegionOne identity admin http://hostname:5000/v3
 unset OS_IDENTITY_API_VERSION OS_TOKEN OS_URL
-/home/stack/scripts/create-mysql-db-for.sh glance
+./usr/local/bin/create-mysql-db-for.sh glance
 openstack user create --domain default --password glance glance
 openstack role add --project service --user glance admin
 openstack service create --name glance --description "OpenStack Image service" image
@@ -55,7 +55,7 @@ sudo glance-manage db_sync
 wget http://download.cirros-cloud.net/0.5.1/cirros-0.5.1-x86_64-disk.img
 openstack image create --disk-format qcow2 --file cirros-0.5.1-x86_64-disk.img --container-format bare --public cirros-0.5.1
 openstack image set --property architecture=x86_64 --property hypervisor_type=qemu cirros-0.5.1
-/home/stack/scripts/create-mysql-db-for.sh neutron
+./usr/local/bin/create-mysql-db-for.sh neutron
 openstack user create --domain default --password neutron neutron
 openstack role add --project service --user neutron admin
 openstack service create --name neutron --description "OpenStack Networking" network
@@ -105,7 +105,7 @@ openstack router set --external-gateway public router1
 openstack router add subnet router1 net1
 openstack floating ip delete $( openstack floating ip list | grep None )
 openstack router add subnet router1 net1
-/home/stack/scripts/create-mysql-db-for.sh nova
+./usr/local/bin/create-mysql-db-for.sh nova
 openstack user create --domain default --password nova nova
 openstack role add --project service --user nova admin
 openstack user create --domain default --password nova placement
@@ -161,7 +161,7 @@ openstack server resize --confirm vm1
 sudo rm /var/lib/nova/nova.sqlite
 sudo virsh net-destroy default
 sudo virsh net-undefine default
-/home/stack/scripts/create-mysql-db-for.sh cinder
+./usr/local/bin/create-mysql-db-for.sh cinder
 openstack user create --domain default --password cinder cinder
 openstack role add --project service --user cinder admin
 openstack service create --name cinderv2 --description "Block Storage" volumev2
