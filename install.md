@@ -1,5 +1,7 @@
 ```
 sudo apt-get install -y chrony mysql-server python-pymysql rabbitmq-server python-openstackclient
+```
+```
 sudo mysql_secure_installation
 sudo rabbitmqctl change_password guest password
 sudo rabbitmq-plugins enable rabbitmq_management --offline
@@ -8,12 +10,16 @@ sudo service rabbitmq-server restart
 curl localhost:15672 -I
 /usr/local/bin/create-mysql-db-for.sh keystone
 sudo apt-get install -y keystone apache2 libapache2-mod-wsgi
+```
+```
 echo manual | sudo tee /etc/init/keystone.override
 sudo service apache2 restart
 sudo keystone-manage db_sync
 sudo keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone
 sudo keystone-manage credential_setup --keystone-user keystone --keystone-group keystone
 sudo apt-get install -y python-openstackclient
+```
+```
 export OS_TOKEN=ADMIN OS_URL=http://hostname:5000/v3 OS_IDENTITY_API_VERSION=3
 openstack domain create --description 'Default OpenStack domain' default
 openstack project create --domain default --description "Admin project" admin
@@ -39,6 +45,8 @@ openstack endpoint create --region RegionOne image public http://hostname:9292
 openstack endpoint create --region RegionOne image internal http://hostname:9292
 openstack endpoint create --region RegionOne image admin http://hostname:9292
 sudo apt-get install -y glance
+```
+```
 sudo service glance-api restart
 sudo service glance-registry restart
 sudo glance-manage db_sync
@@ -53,13 +61,19 @@ openstack endpoint create --region RegionOne network public http://hostname:9696
 openstack endpoint create --region RegionOne network internal http://hostname:9696
 openstack endpoint create --region RegionOne network admin http://hostname:9696
 sudo apt-get install -y neutron-server
+```
+```
 sudo neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
 sudo service neutron-server restart
 sudo apt-get install -y openvswitch-switch
+```
+```
 sudo ovs-vsctl add-br br-int
 sudo ovs-vsctl add-br br-eth2
 sudo ovs-vsctl add-port br-eth2 eth2
 sudo apt-get install -y neutron-openvswitch-agent
+```
+```
 sudo service neutron-openvswitch-agent restart
 sudo ovs-vsctl add-br br-ex
 sudo ovs-vsctl add-port br-ex eth1
@@ -68,12 +82,16 @@ sudo ip addr add x.x.x.x/24 dev br-ex
 sudo ip link set dev br-ex up
 sudo sed --in-place /ifconfig.eth1.*24/s/^/#/ /etc/network/if-up.d/dummy
 sudo apt-get install -y neutron-l3-agent
+```
+```
 sudo service neutron-l3-agent restart
 sudo service openvswitch-switch restart
 sudo service neutron-server restart
 sudo service neutron-openvswitch-agent restart
 sudo service neutron-l3-agent restart
 sudo apt-get install -y neutron-dhcp-agent
+```
+```
 sudo service neutron-dhcp-agent restart
 sudo service neutron-metadata-agent restart
 openstack network create --external --provider-network-type flat --provider-physical-network external public
@@ -99,18 +117,28 @@ openstack endpoint create --region RegionOne placement public http://hostname:87
 openstack endpoint create --region RegionOne placement internal http://hostname:8778
 openstack endpoint create --region RegionOne placement admin http://hostname:8778
 sudo apt-get install -y nova-api
+```
+```
 sudo service nova-api restart
 sudo apt-get install -y nova-placement-api
+```
+```
 sudo nova-manage api_db sync
 sudo nova-manage cell_v2 map_cell0
 sudo nova-manage cell_v2 create_cell --name=cell1 --verbose
 sudo nova-manage db sync
 sudo apt-get install -y nova-scheduler nova-conductor
+```
+```
 sudo apt-get install -y nova-consoleauth nova-novncproxy nova-xvpvncproxy
+```
+```
 sudo service nova-consoleauth restart
 sudo service nova-xvpvncproxy restart
 sudo service nova-novncproxy restart
 sudo apt-get install -y nova-compute python-guestfs
+```
+```
 sudo dpkg-statoverride --update --add root root 0644 /boot/vmlinuz-4.15.0-48-generic
 sudo chmod +x /etc/kernel/postinst.d/statoverride
 sudo egrep -c '(vmx|svm)' /proc/cpuinfo
@@ -143,13 +171,21 @@ openstack endpoint create --region RegionOne volumev3 public http://hostname:877
 openstack endpoint create --region RegionOne volumev3 internal http://hostname:8776/v3/%\(project_id\)s
 openstack endpoint create --region RegionOne volumev3 admin http://hostname:8776/v3/%\(project_id\)s
 sudo apt-get install -y cinder-api
+```
+```
 sudo cinder-manage db sync
 sudo apt-get install -y cinder-scheduler
+```
+```
 sudo apt-get install -y lvm2 thin-provisioning-tools
+```
+```
 cat /proc/partitions
 sudo pvcreate /dev/xvda3
 sudo vgcreate cinder-volumes /dev/xvda3
 sudo apt-get install -y cinder-volume
+```
+```
 sudo service cinder-volume restart
 sudo service cinder-scheduler restart
 sudo service apache2 restart
@@ -157,8 +193,14 @@ sudo service tgt restart
 openstack volume create --size 1 vol1
 openstack volume delete vol1
 sudo apt-get install -y memcached python-memcache
+```
+```
 sudo apt-get install -y openstack-dashboard
+```
+```
 sudo apt-get remove --purge -y openstack-dashboard-ubuntu-theme
+```
+```
 sudo service apache2 restart
 sudo service memcached restart
 openstack user create --domain default --password heat heat
@@ -178,14 +220,18 @@ openstack role create heat_stack_owner
 openstack role add --project admin --user admin heat_stack_owner
 openstack role create heat_stack_user
 sudo apt-get install -y heat-api heat-api-cfn
+```
+```
 sudo apt-get install -y heat-engine
+```
+```
 sudo heat-manage db_sync
 sudo service heat-api restart
 sudo service heat-api-cfn restart
 sudo service heat-engine restart
 sudo apt-get install -y python-heat-dashboard
+```
+```
 sudo service apache2 restart
 sudo service memcached restart
-
-
 ```
