@@ -27,7 +27,7 @@ sudo keystone-manage credential_setup --keystone-user keystone --keystone-group 
 sudo apt-get install -y python-openstackclient
 ```
 ```
-export OS_TOKEN=ADMIN OS_URL=http://hostname:5000/v3 OS_IDENTITY_API_VERSION=3
+export OS_TOKEN=ADMIN OS_URL=http://dlab:5000/v3 OS_IDENTITY_API_VERSION=3
 openstack domain create --description 'Default OpenStack domain' default
 openstack project create --domain default --description "Admin project" admin
 openstack user create --domain default --password admin admin
@@ -40,17 +40,17 @@ openstack role create member
 openstack role add --project demo --user demo member
 openstack role add --project demo --user admin admin
 openstack service create --name keystone --description "OpenStack Identity" identity
-openstack endpoint create --region RegionOne identity public http://hostname:5000/v3
-openstack endpoint create --region RegionOne identity internal http://hostname:5000/v3
-openstack endpoint create --region RegionOne identity admin http://hostname:5000/v3
+openstack endpoint create --region RegionOne identity public http://dlab:5000/v3
+openstack endpoint create --region RegionOne identity internal http://dlab:5000/v3
+openstack endpoint create --region RegionOne identity admin http://dlab:5000/v3
 unset OS_IDENTITY_API_VERSION OS_TOKEN OS_URL
 create-mysql-db-for.sh glance
 openstack user create --domain default --password glance glance
 openstack role add --project service --user glance admin
 openstack service create --name glance --description "OpenStack Image service" image
-openstack endpoint create --region RegionOne image public http://hostname:9292
-openstack endpoint create --region RegionOne image internal http://hostname:9292
-openstack endpoint create --region RegionOne image admin http://hostname:9292
+openstack endpoint create --region RegionOne image public http://dlab:9292
+openstack endpoint create --region RegionOne image internal http://dlab:9292
+openstack endpoint create --region RegionOne image admin http://dlab:9292
 sudo apt-get install -y glance
 ```
 ```
@@ -64,9 +64,9 @@ create-mysql-db-for.sh neutron
 openstack user create --domain default --password neutron neutron
 openstack role add --project service --user neutron admin
 openstack service create --name neutron --description "OpenStack Networking" network
-openstack endpoint create --region RegionOne network public http://hostname:9696
-openstack endpoint create --region RegionOne network internal http://hostname:9696
-openstack endpoint create --region RegionOne network admin http://hostname:9696
+openstack endpoint create --region RegionOne network public http://dlab:9696
+openstack endpoint create --region RegionOne network internal http://dlab:9696
+openstack endpoint create --region RegionOne network admin http://dlab:9696
 sudo apt-get install -y neutron-server
 ```
 ```
@@ -116,13 +116,13 @@ openstack role add --project service --user nova admin
 openstack user create --domain default --password nova placement
 openstack role add --project service --user placement admin
 openstack service create --name nova --description "OpenStack Compute" compute
-openstack endpoint create --region RegionOne compute public http://hostname:8774/v2.1
-openstack endpoint create --region RegionOne compute internal http://hostname:8774/v2.1
-openstack endpoint create --region RegionOne compute admin http://hostname:8774/v2.1
+openstack endpoint create --region RegionOne compute public http://dlab:8774/v2.1
+openstack endpoint create --region RegionOne compute internal http://dlab:8774/v2.1
+openstack endpoint create --region RegionOne compute admin http://dlab:8774/v2.1
 openstack service create --name placement --description "Placement API" placement
-openstack endpoint create --region RegionOne placement public http://hostname:8778
-openstack endpoint create --region RegionOne placement internal http://hostname:8778
-openstack endpoint create --region RegionOne placement admin http://hostname:8778
+openstack endpoint create --region RegionOne placement public http://dlab:8778
+openstack endpoint create --region RegionOne placement internal http://dlab:8778
+openstack endpoint create --region RegionOne placement admin http://dlab:8778
 sudo apt-get install -y nova-api
 ```
 ```
@@ -171,12 +171,12 @@ openstack user create --domain default --password cinder cinder
 openstack role add --project service --user cinder admin
 openstack service create --name cinderv2 --description "Block Storage" volumev2
 openstack service create --name cinderv3 --description "Block Storage" volumev3
-openstack endpoint create --region RegionOne volumev2 public http://hostname:8776/v2/%\(project_id\)s
-openstack endpoint create --region RegionOne volumev2 internal http://hostname:8776/v2/%\(project_id\)s
-openstack endpoint create --region RegionOne volumev2 admin http://hostname:8776/v2/%\(project_id\)s
-openstack endpoint create --region RegionOne volumev3 public http://hostname:8776/v3/%\(project_id\)s
-openstack endpoint create --region RegionOne volumev3 internal http://hostname:8776/v3/%\(project_id\)s
-openstack endpoint create --region RegionOne volumev3 admin http://hostname:8776/v3/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev2 public http://dlab:8776/v2/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev2 internal http://dlab:8776/v2/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev2 admin http://dlab:8776/v2/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev3 public http://dlab:8776/v3/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev3 internal http://dlab:8776/v3/%\(project_id\)s
+openstack endpoint create --region RegionOne volumev3 admin http://dlab:8776/v3/%\(project_id\)s
 sudo apt-get install -y cinder-api
 ```
 ```
@@ -214,9 +214,9 @@ openstack user create --domain default --password heat heat
 openstack role add --project service --user heat admin
 openstack service create --name heat --description "Orchestration" orchestration
 openstack service create --name heat-cfn --description "Orchestration" cloudformation
-openstack endpoint create --region RegionOne orchestration public http://hostname:8004/v1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne orchestration internal http://hostname:8004/v1/%\(tenant_id\)s
-openstack endpoint create --region RegionOne orchestration admin http://hostname:8004/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne orchestration public http://dlab:8004/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne orchestration internal http://dlab:8004/v1/%\(tenant_id\)s
+openstack endpoint create --region RegionOne orchestration admin http://dlab:8004/v1/%\(tenant_id\)s
 openstack endpoint create --region RegionOne cloudformation public http://dlab:8000/v1
 openstack endpoint create --region RegionOne cloudformation internal http://dlab:8000/v1
 openstack endpoint create --region RegionOne cloudformation admin http://dlab:8000/v1

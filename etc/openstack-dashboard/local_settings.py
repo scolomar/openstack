@@ -14,7 +14,7 @@ CACHES = {
     },
 }
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-OPENSTACK_HOST = "hostname"
+OPENSTACK_HOST = "dlab"
 OPENSTACK_KEYSTONE_URL = "http://%s:5000/v3" % OPENSTACK_HOST
 OPENSTACK_KEYSTONE_DEFAULT_ROLE = "_member_"
 OPENSTACK_KEYSTONE_BACKEND = {
