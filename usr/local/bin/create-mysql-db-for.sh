@@ -61,6 +61,6 @@ fi
 cat ${conf_file}
 set -x
 sudo mysql -u root -pstack < $conf_file
-#sudo mysql -h $management_ip -u ${name}User -p${name}Pass -e "show databases" ${name}
-sudo mysql -h dlab -u ${name}User -p${name}Pass -e "show databases" ${name}
+sudo mysql -h $management_ip -u ${name}User -p${name}Pass -e "show databases" ${name}
+#sudo mysql -h dlab -u ${name}User -p${name}Pass -e "show databases" ${name}
 rm ${conf_file}
