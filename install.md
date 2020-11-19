@@ -2,7 +2,7 @@
 git clone git@github.com:secobau/openstack.git
 ```
 ```
-sudo cp -r openstack/* /
+sudo cp -rv openstack/* /
 sudo chmod +x /usr/local/bin/*
 source ./adminrc.sh
 ```
