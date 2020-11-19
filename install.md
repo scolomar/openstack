@@ -103,10 +103,10 @@ sudo service neutron-metadata-agent restart
 openstack network create --external --provider-network-type flat --provider-physical-network external public
 openstack subnet create public-subnet --no-dhcp --gateway 172.30.1.1 --subnet-range 172.30.1.0/24 --allocation-pool start=172.30.1.60,end=172.30.1.69 --network public
 openstack floating ip create public
+openstack network create private
 openstack subnet create net1 --subnet-range 10.0.0.0/24 --network private
 openstack router create router1
 openstack router set --external-gateway public router1
-openstack router add subnet router1 net1
 openstack floating ip delete $( openstack floating ip list | grep None )
 openstack router add subnet router1 net1
 create-mysql-db-for.sh nova
