@@ -83,8 +83,8 @@ sudo apt-get install -y neutron-openvswitch-agent
 sudo service neutron-openvswitch-agent restart
 sudo ovs-vsctl add-br br-ex
 sudo ovs-vsctl add-port br-ex eth1
-sudo ip addr del x.x.x.x/24 dev eth1
-sudo ip addr add x.x.x.x/24 dev br-ex
+sudo ip addr del 172.30.1.1/24 dev eth1
+sudo ip addr add 172.30.1.1/24 dev br-ex
 sudo ip link set dev br-ex up
 sudo sed --in-place /ifconfig.eth1.*24/s/^/#/ /etc/network/if-up.d/dummy
 sudo apt-get install -y neutron-l3-agent
