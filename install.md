@@ -16,7 +16,6 @@ sudo rabbitmqctl change_password guest password
 sudo rabbitmq-plugins enable rabbitmq_management --offline
 echo [{rabbit, [{loopback_users, []}]}]. | sudo tee /etc/rabbitmq/rabbitmq.config
 sudo service rabbitmq-server restart
-curl localhost:15672 -I
 create-mysql-db-for.sh keystone
 sudo apt-get install -y keystone apache2 libapache2-mod-wsgi
 ```
@@ -43,9 +42,7 @@ openstack endpoint create --region RegionOne identity public http://dlab:5000/v3
 openstack endpoint create --region RegionOne identity internal http://dlab:5000/v3
 openstack endpoint create --region RegionOne identity admin http://dlab:5000/v3
 unset OS_IDENTITY_API_VERSION OS_TOKEN OS_URL
-
 source ./adminrc.sh
-
 create-mysql-db-for.sh glance
 openstack user create --domain default --password glance glance
 openstack role add --project service --user glance admin
