@@ -124,10 +124,7 @@ sudo service nova-compute restart
 sudo service nova-api restart
 sudo service apache2 restart
 openstack flavor create --vcpus 1 --disk 1 --ram 512 m1.tiny
-nova get-vnc-console vm1 novnc
-openstack server resize --flavor m1.xsmall vm1
-openstack server resize --confirm vm1
-sudo rm /var/lib/nova/nova.sqlite
+sudo rm -f /var/lib/nova/nova.sqlite
 sudo virsh net-destroy default
 sudo virsh net-undefine default
 create-mysql-db-for.sh cinder
