@@ -154,6 +154,7 @@ sudo apt-get install -y openstack-dashboard
 sudo apt-get remove --purge -y openstack-dashboard-ubuntu-theme
 sudo service apache2 restart
 sudo service memcached restart
+create-mysql-db-for.sh heat
 openstack user create --domain default --password heat heat
 openstack role add --project service --user heat admin
 openstack service create --name heat --description "Orchestration" orchestration
