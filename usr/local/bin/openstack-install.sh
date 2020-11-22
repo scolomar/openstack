@@ -1,6 +1,11 @@
 #!/bin/sh -x
 set -e
 
+extIP=$( ip r | awk '/eth1 proto/{ print $9 }' )
+extIPnet=$( echo $extIP | cut -d. -f1,2,3 )
+mgmtIP=$( ip r | awk '/eth0 proto/{ print $9 }' )
+publicIP=$( curl http://169.254.169.254/latest/meta-data/public-ipv4 )
+
 sudo apt-get install -y chrony mysql-server python-pymysql rabbitmq-server python-openstackclient
 sudo mysql_secure_installation
 sudo rabbitmqctl change_password guest password
@@ -53,6 +58,8 @@ openstack service create --name neutron --description "OpenStack Networking" net
 openstack endpoint create --region RegionOne network public http://localhost:9696
 openstack endpoint create --region RegionOne network internal http://localhost:9696
 openstack endpoint create --region RegionOne network admin http://localhost:9696
+sudo sed -i s/extIP/$extIP/ /etc/neutron/metada_agent.ini
+sudo sed -i s/extIP/$extIP/ /etc/network/interfaces.d/br-ex.cfg
 sudo apt-get install -y neutron-server
 sudo neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
 sudo service neutron-server restart
@@ -64,8 +71,8 @@ sudo apt-get install -y neutron-openvswitch-agent
 sudo service neutron-openvswitch-agent restart
 sudo ovs-vsctl add-br br-ex
 sudo ovs-vsctl add-port br-ex eth1
-sudo ip addr del 172.30.1.1/24 dev eth1
-sudo ip addr add 172.30.1.1/24 dev br-ex
+sudo ip addr del extIP/24 dev eth1
+sudo ip addr add extIP/24 dev br-ex
 sudo ip link set dev br-ex up
 sudo sed --in-place /ifconfig.eth1.*24/s/^/#/ /etc/network/if-up.d/dummy
 sudo apt-get install -y neutron-l3-agent
@@ -78,7 +85,7 @@ sudo apt-get install -y neutron-dhcp-agent
 sudo service neutron-dhcp-agent restart
 sudo service neutron-metadata-agent restart
 openstack network create --external --provider-network-type flat --provider-physical-network external public
-openstack subnet create public-subnet --no-dhcp --gateway 172.30.1.1 --subnet-range 172.30.1.0/24 --allocation-pool start=172.30.1.60,end=172.30.1.69 --network public
+openstack subnet create public-subnet --no-dhcp --gateway extIP --subnet-range $extIPnet.0/24 --allocation-pool start=$extIPnet.100,end=$extIPnet.109 --network public
 openstack floating ip create public
 openstack network create private
 openstack subnet create net1 --subnet-range 10.0.0.0/24 --network private
@@ -98,8 +105,8 @@ openstack service create --name placement --description "Placement API" placemen
 openstack endpoint create --region RegionOne placement public http://localhost:8778
 openstack endpoint create --region RegionOne placement internal http://localhost:8778
 openstack endpoint create --region RegionOne placement admin http://localhost:8778
-sudo sed -i s/mgmtIP/$( ip r | awk '/dev eth0 proto/{ print $9 }' )/ /etc/nova/nova.conf
-sudo sed -i s/publicIP/$( curl http://169.254.169.254/latest/meta-data/public-ipv4 )/ /etc/nova/nova.conf
+sudo sed -i s/mgmtIP/$mgmtIP/ /etc/nova/nova.conf
+sudo sed -i s/publicIP/$publicIP/ /etc/nova/nova.conf
 sudo apt-get install -y nova-api
 sudo service nova-api restart
 sudo apt-get install -y nova-placement-api
