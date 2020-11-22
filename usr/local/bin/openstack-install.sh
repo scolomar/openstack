@@ -3,7 +3,7 @@ set -e
 
 sudo apt-get install -y chrony mysql-server python-pymysql rabbitmq-server python-openstackclient
 sudo mysql_secure_installation
-sudo rabbitmqctl change_password guest password
+sudo rabbitmqctl change_password guest bunny
 sudo rabbitmq-plugins enable rabbitmq_management --offline
 echo [{rabbit, [{loopback_users, []}]}]. | sudo tee /etc/rabbitmq/rabbitmq.config
 sudo service rabbitmq-server restart
