@@ -98,6 +98,8 @@ openstack service create --name placement --description "Placement API" placemen
 openstack endpoint create --region RegionOne placement public http://dlab:8778
 openstack endpoint create --region RegionOne placement internal http://dlab:8778
 openstack endpoint create --region RegionOne placement admin http://dlab:8778
+sudo sed -i s/mgmtIP/$( ip r | awk '/dev eth0 proto/{ print $9 }' )/ /etc/nova/nova.conf
+sudo sed -i s/publicIP/$( curl http://169.254.169.254/latest/meta-data/public-ipv4 )/ /etc/nova/nova.conf
 sudo apt-get install -y nova-api
 sudo service nova-api restart
 sudo apt-get install -y nova-placement-api
