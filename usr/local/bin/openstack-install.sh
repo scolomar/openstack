@@ -71,8 +71,8 @@ sudo apt-get install -y neutron-openvswitch-agent
 sudo service neutron-openvswitch-agent restart
 sudo ovs-vsctl add-br br-ex
 sudo ovs-vsctl add-port br-ex eth1
-sudo ip addr del extIP/24 dev eth1
-sudo ip addr add extIP/24 dev br-ex
+sudo ip addr del $extIP/24 dev eth1
+sudo ip addr add $extIP/24 dev br-ex
 sudo ip link set dev br-ex up
 sudo sed --in-place /ifconfig.eth1.*24/s/^/#/ /etc/network/if-up.d/dummy
 sudo apt-get install -y neutron-l3-agent
@@ -85,7 +85,7 @@ sudo apt-get install -y neutron-dhcp-agent
 sudo service neutron-dhcp-agent restart
 sudo service neutron-metadata-agent restart
 openstack network create --external --provider-network-type flat --provider-physical-network external public
-openstack subnet create public-subnet --no-dhcp --gateway extIP --subnet-range $extIPnet.0/24 --allocation-pool start=$extIPnet.100,end=$extIPnet.109 --network public
+openstack subnet create public-subnet --no-dhcp --gateway $extIP --subnet-range $extIPnet.0/24 --allocation-pool start=$extIPnet.100,end=$extIPnet.109 --network public
 openstack floating ip create public
 openstack network create private
 openstack subnet create net1 --subnet-range 10.0.0.0/24 --network private
