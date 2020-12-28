@@ -6,7 +6,7 @@ then
     echo -e "Usage: $0 <database-name> [management-nic=eth0]\nScript requires at least one parameter.\n"
     exit 1
 fi
-management_nic='eth0'
+management_nic='ens5'
 if [ $2 ]; then
     management_nic=$2
 fi
