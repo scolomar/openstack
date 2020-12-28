@@ -4,7 +4,7 @@ sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5EDB1B62EC4926EA
 sudo apt-get update
 ```
 ```
-git clone git@github.com:secobau/openstack.git
+git clone git@github.com:secobau/openstack.git --single-branch -b ec2
 ```
 ```
 sudo cp -rv openstack/* /
