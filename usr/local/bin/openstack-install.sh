@@ -36,7 +36,7 @@ openstack endpoint create --region RegionOne identity public http://localhost:50
 openstack endpoint create --region RegionOne identity internal http://localhost:5000/v3
 openstack endpoint create --region RegionOne identity admin http://localhost:5000/v3
 unset OS_IDENTITY_API_VERSION OS_TOKEN OS_URL
-. ./adminrc.sh
+. ./openstack/home/ubuntu/adminrc.sh
 create-mysql-db-for.sh glance
 openstack user create --domain default --password glance glance
 openstack role add --project service --user glance admin
