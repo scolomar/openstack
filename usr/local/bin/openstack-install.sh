@@ -8,6 +8,7 @@ publicIP=$( curl http://169.254.169.254/latest/meta-data/public-ipv4 )
 
 sudo apt-get update
 sudo apt-get install -y chrony mysql-server python-pymysql rabbitmq-server python-openstackclient
+
 sudo mysql_secure_installation
 sudo rabbitmqctl change_password guest password
 sudo rabbitmq-plugins enable rabbitmq_management --offline
@@ -15,6 +16,7 @@ echo [{rabbit, [{loopback_users, []}]}]. | sudo tee /etc/rabbitmq/rabbitmq.confi
 sudo service rabbitmq-server restart
 create-mysql-db-for.sh keystone
 sudo apt-get install -y keystone apache2 libapache2-mod-wsgi
+
 echo manual | sudo tee /etc/init/keystone.override
 sudo service apache2 restart
 sudo keystone-manage db_sync
@@ -46,6 +48,7 @@ openstack endpoint create --region RegionOne image public http://localhost:9292
 openstack endpoint create --region RegionOne image internal http://localhost:9292
 openstack endpoint create --region RegionOne image admin http://localhost:9292
 sudo apt-get install -y glance
+
 sudo service glance-api restart
 sudo service glance-registry restart
 sudo glance-manage db_sync
@@ -60,29 +63,17 @@ openstack endpoint create --region RegionOne network public http://localhost:969
 openstack endpoint create --region RegionOne network internal http://localhost:9696
 openstack endpoint create --region RegionOne network admin http://localhost:9696
 sudo sed -i s/extIP/$extIP/ /etc/neutron/metada_agent.ini
-sudo sed -i s/extIP/$extIP/ /etc/network/interfaces.d/br-ex.cfg
 sudo apt-get install -y neutron-server
+
 sudo neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
 sudo service neutron-server restart
-sudo apt-get install -y openvswitch-switch
-sudo ovs-vsctl add-br br-int
-sudo ovs-vsctl add-br br-eth2
-sudo ovs-vsctl add-port br-eth2 eth2
-sudo apt-get install -y neutron-openvswitch-agent
-sudo service neutron-openvswitch-agent restart
-sudo ovs-vsctl add-br br-ex
-sudo ovs-vsctl add-port br-ex eth1
-sudo ip addr del $extIP/24 dev eth1
-sudo ip addr add $extIP/24 dev br-ex
-sudo ip link set dev br-ex up
-sudo sed --in-place /ifconfig.eth1.*24/s/^/#/ /etc/network/if-up.d/dummy
 sudo apt-get install -y neutron-l3-agent
+
 sudo service neutron-l3-agent restart
-sudo service openvswitch-switch restart
 sudo service neutron-server restart
-sudo service neutron-openvswitch-agent restart
 sudo service neutron-l3-agent restart
 sudo apt-get install -y neutron-dhcp-agent
+
 sudo service neutron-dhcp-agent restart
 sudo service neutron-metadata-agent restart
 openstack network create --external --provider-network-type flat --provider-physical-network external public
@@ -109,19 +100,24 @@ openstack endpoint create --region RegionOne placement admin http://localhost:87
 sudo sed -i s/mgmtIP/$mgmtIP/ /etc/nova/nova.conf
 sudo sed -i s/publicIP/$publicIP/ /etc/nova/nova.conf
 sudo apt-get install -y nova-api
+
 sudo service nova-api restart
 sudo apt-get install -y nova-placement-api
+
 sudo nova-manage api_db sync
 sudo nova-manage cell_v2 map_cell0
 sudo nova-manage cell_v2 create_cell --name=cell1 --verbose
 sudo nova-manage db sync
 sudo apt-get install -y nova-scheduler nova-conductor
+
 sudo apt-get install -y nova-consoleauth nova-novncproxy nova-xvpvncproxy
+
 sudo service nova-consoleauth restart
 sudo service nova-xvpvncproxy restart
 sudo service nova-novncproxy restart
 sudo apt-get install -y nova-compute python-guestfs
-sudo dpkg-statoverride --update --add root root 0644 /boot/vmlinuz-4.15.0-48-generic
+
+sudo dpkg-statoverride --update --add root root 0644 /boot/vmlinuz-*
 sudo chmod +x /etc/kernel/postinst.d/statoverride
 sudo service nova-compute restart
 sudo nova-manage cell_v2 discover_hosts --verbose
@@ -149,19 +145,26 @@ openstack endpoint create --region RegionOne volumev3 public http://localhost:87
 openstack endpoint create --region RegionOne volumev3 internal http://localhost:8776/v3/%\(project_id\)s
 openstack endpoint create --region RegionOne volumev3 admin http://localhost:8776/v3/%\(project_id\)s
 sudo apt-get install -y cinder-api
+
 sudo cinder-manage db sync
 sudo apt-get install -y cinder-scheduler
+
 sudo apt-get install -y lvm2 thin-provisioning-tools
+
 sudo pvcreate /dev/xvda3
 sudo vgcreate cinder-volumes /dev/xvda3
 sudo apt-get install -y cinder-volume
+
 sudo service cinder-volume restart
 sudo service cinder-scheduler restart
 sudo service apache2 restart
 sudo service tgt restart
 sudo apt-get install -y memcached python-memcache
+
 sudo apt-get install -y openstack-dashboard
+
 sudo apt-get remove --purge -y openstack-dashboard-ubuntu-theme
+
 sudo service apache2 restart
 sudo service memcached restart
 create-mysql-db-for.sh heat
@@ -182,11 +185,14 @@ openstack role create heat_stack_owner
 openstack role add --project admin --user admin heat_stack_owner
 openstack role create heat_stack_user
 sudo apt-get install -y heat-api heat-api-cfn
+
 sudo apt-get install -y heat-engine
+
 sudo heat-manage db_sync
 sudo service heat-api restart
 sudo service heat-api-cfn restart
 sudo service heat-engine restart
 sudo apt-get install -y python-heat-dashboard
+
 sudo service apache2 restart
 sudo service memcached restart
