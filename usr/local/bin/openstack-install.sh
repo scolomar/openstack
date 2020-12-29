@@ -63,14 +63,29 @@ openstack endpoint create --region RegionOne network public http://localhost:969
 openstack endpoint create --region RegionOne network internal http://localhost:9696
 openstack endpoint create --region RegionOne network admin http://localhost:9696
 sudo sed -i s/extIP/$extIP/ /etc/neutron/metada_agent.ini
+sudo sed -i s/extIP/$extIP/ /etc/network/interfaces.d/br-ex.cfg
 sudo apt-get install -y neutron-server
 
 sudo neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head
 sudo service neutron-server restart
+sudo apt-get install -y openvswitch-switch
+sudo ovs-vsctl add-br br-int
+sudo ovs-vsctl add-br br-eth2
+sudo ovs-vsctl add-port br-eth2 ens7
+sudo apt-get install -y neutron-openvswitch-agent
+sudo service neutron-openvswitch-agent restart
+sudo ovs-vsctl add-br br-ex
+sudo ovs-vsctl add-port br-ex ens6
+sudo ip addr del $extIP/24 dev ens6
+sudo ip addr add $extIP/24 dev br-ex
+sudo ip link set dev br-ex up
+sudo sed --in-place /ifconfig.eth1.*24/s/^/#/ /etc/network/if-up.d/dummy
 sudo apt-get install -y neutron-l3-agent
 
 sudo service neutron-l3-agent restart
+sudo service openvswitch-switch restart
 sudo service neutron-server restart
+sudo service neutron-openvswitch-agent restart
 sudo service neutron-l3-agent restart
 sudo apt-get install -y neutron-dhcp-agent
 
