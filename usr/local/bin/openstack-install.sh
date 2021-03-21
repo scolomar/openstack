@@ -6,6 +6,7 @@ extIPnet=$( echo $extIP | cut -d. -f1,2,3 )
 mgmtIP=$( ip r | awk '/eth0 proto/{ print $9 }' )
 publicIP=$( curl http://169.254.169.254/latest/meta-data/public-ipv4 )
 
+sudo timedatectl set-timezone UTC
 sudo apt-get install -y chrony mysql-server python-pymysql rabbitmq-server python-openstackclient
 sudo mysql_secure_installation
 sudo rabbitmqctl change_password guest password
