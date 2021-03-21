@@ -1,5 +1,5 @@
 ```
-git clone git@github.com:secobau/openstack.git
+git clone https://github.com/secobau/openstack.git
 ```
 ```
 sudo cp -rv openstack/* /
