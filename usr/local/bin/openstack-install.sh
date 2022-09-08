@@ -7,13 +7,37 @@ mgmtIP=$( ip r | awk '/eth0 proto/{ print $9 }' )
 publicIP=$( curl http://169.254.169.254/latest/meta-data/public-ipv4 )
 
 sudo timedatectl set-timezone UTC
-sudo apt-get install -y chrony mysql-server python-pymysql rabbitmq-server python-openstackclient software-properties-common
+sudo apt-get install -y chrony etcd mariadb-server mariadb-client memcached python-memcache python-pymysql rabbitmq-server python-openstackclient software-properties-common
+curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+sudo bash mariadb_repo_setup --mariadb-server-version=10.4
 sudo mysql_secure_installation
-sudo rabbitmqctl change_password guest password
+sudo service mysqld restart
+wget http://edu.mirantis.com/scripts/create-mysql-db-for.sh
+chmod +x create-mysql-db-for.sh
+sudo rabbitmqctl change_password guest bunny
+sudo rabbitmqctl add_user openstack openstack
+sudo rabbitmqctl set_permissions openstack ".*" ".*" ".*"
+sudo rabbitmqctl set_user_tags openstack administrator
 sudo rabbitmq-plugins enable rabbitmq_management --offline
 echo [{rabbit, [{loopback_users, []}]}]. | sudo tee /etc/rabbitmq/rabbitmq.config
 sudo service rabbitmq-server restart
-create-mysql-db-for.sh keystone
+sudo service memcached restart
+sudo tee /etc/default/etcd 0<<EOF
+ETCD_NAME="dlab"
+ETCD_DATA_DIR="/var/lib/etcd"
+ETCD_LISTEN_PEER_URLS="http://0.0.0.0:2380"
+ETCD_LISTEN_CLIENT_URLS="http://${mgmtIP}:2379"
+ETCD_INITIAL_ADVERTISE_PEER_URLS="http://${mgmtIP}:2380"
+ETCD_INITIAL_CLUSTER="dlab=http://${mgmtIP}:2380"
+ETCD_INITIAL_CLUSTER_STATE="new"
+ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster-01"
+ETCD_ADVERTISE_CLIENT_URLS="http://${mgmtIP}:2379"
+EOF
+sudo systemctl enable etcd
+sudo systemctl restart etcd
+
+./create-mysql-db-for.sh keystone
+###
 sudo apt-get install -y keystone apache2 libapache2-mod-wsgi
 echo manual | sudo tee /etc/init/keystone.override
 sudo service apache2 restart
