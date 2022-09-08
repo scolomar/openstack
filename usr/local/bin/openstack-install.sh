@@ -7,7 +7,7 @@ mgmtIP=$( ip r | awk '/eth0 proto/{ print $9 }' )
 publicIP=$( curl http://169.254.169.254/latest/meta-data/public-ipv4 )
 
 sudo timedatectl set-timezone UTC
-sudo apt-get install -y chrony mysql-server python-pymysql rabbitmq-server python-openstackclient
+sudo apt-get install -y chrony mysql-server python-pymysql rabbitmq-server python-openstackclient software-properties-common
 sudo mysql_secure_installation
 sudo rabbitmqctl change_password guest password
 sudo rabbitmq-plugins enable rabbitmq_management --offline
